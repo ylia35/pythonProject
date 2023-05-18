@@ -2,8 +2,19 @@ import requests
 from bs4 import BeautifulSoup
 import sqlite3
 
-url = ['https://olympteka.ru/olymp/game/profile/50.html', 'https://olympteka.ru/olymp/game/profile/33.html', 'https://olympteka.ru/olymp/game/profile/34.html']
+url = ['https://olympteka.ru/olymp/game/profile/50.html',\
+       'https://olympteka.ru/olymp/game/profile/48.html',\
+       'https://olympteka.ru/olymp/game/profile/46.html',\
+       'https://olympteka.ru/olymp/game/profile/33.html',\
+       'https://olympteka.ru/olymp/game/profile/34.html',\
+       'https://olympteka.ru/olymp/game/profile/31.html']
 
+        #Сочи-зимняя Олимпиада 2014
+        #Ванкувер-зимняя Олимпиада 2010
+        #Турин-зимняя Олимпиада 2006
+        #Москва_летние Олимпиада 1980
+        #Лос Анджелесе-летняя Олимпиада 1984
+        #Монреаль-летняя Олимпиада 1976
 def parser(url):
     rowdata = []; inf = []
     response = requests.get(url)
@@ -16,17 +27,34 @@ def parser(url):
         rowdata.append(quote.text)
     for i in rowdata:
         inf.append(i.split())
-
+    print(1,inf)
     inf = inf[0]
     inf[0] = 'Место'
     if 'Северная' in inf:
         change = inf.index('Северная')
         inf[change] = str(inf[change - 1] + ' ' + inf[change])
         inf.pop(change - 1), inf.pop(change)
-    elif 'Южная' in inf:
+    if 'Южная' in inf:
         change = inf.index('Южная')
         inf[change - 1] = str(inf[change - 1] + ' ' + inf[change])
         inf.pop(change)
+    if 'Новая' in inf:
+        change = inf.index('Новая')
+        inf[change] = str(inf[change] + ' ' + inf[change + 1])
+        inf.pop(change + 1)
+    if 'Тайвань' in inf:
+        change = inf.index('Тайвань')
+        inf.pop(change + 1)
+        inf.pop(change + 1)
+    if 'Бермудские' in inf:
+        change = inf.index('Бермудские')
+        inf[change] = str(inf[change] + ' ' + inf[change + 1])
+        inf.pop(change + 1)
+    if 'Тринидад' in inf:
+        change = inf.index('Тринидад')
+        inf[change] = str(inf[change] + ' ' + inf[change + 1] + ' ' + inf[change + 2])
+        inf.pop(change + 1)
+        inf.pop(change + 1)
 
     change = inf.index('Всего', 8)
     inf[change] = str(inf[change] + ' ' + inf[change + 1])
@@ -66,7 +94,9 @@ def count():
     cur = con.cursor()
     cur.execute("SELECT tbl_name FROM sqlite_master where type='table'")
     olymp_name = cur.fetchall()
-    name = []; name.append(olymp_name[0][0]); name.append(olymp_name[1][0])
+    name = []
+    for i in olymp_name:
+        name.append(i[0])
     for j in name:
         cur.execute(f"SELECT count(*) from '{j}'")
         row_count = cur.fetchone()
@@ -89,9 +119,9 @@ def max_medals():
     cur = con.cursor()
     cur.execute("SELECT tbl_name FROM sqlite_master where type='table'")
     olymp_name = cur.fetchall()
-    name = [];
-    name.append(olymp_name[0][0]);
-    name.append(olymp_name[1][0])
+    name = []
+    for i in olymp_name:
+        name.append(i[0])
     for j in name:
         print(f"{j}")
         for i in ['Золото', 'Серебро', 'Бронза']:
