@@ -15,6 +15,7 @@ url = ['https://olympteka.ru/olymp/game/profile/50.html',\
         #Москва_летние Олимпиада 1980
         #Лос Анджелесе-летняя Олимпиада 1984
         #Монреаль-летняя Олимпиада 1976
+              
 def parser(url):
     rowdata = []; inf = []
     response = requests.get(url)
